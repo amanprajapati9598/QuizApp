@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz App</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      background: linear-gradient(270deg, #ff6ec4, #7873f5, #42e695, #f7971e);
+      background-size: 800% 800%;
+      animation: gradientMove 12s ease infinite;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    @keyframes gradientMove {
+      0% {background-position: 0% 50%;}
+      50% {background-position: 100% 50%;}
+      100% {background-position: 0% 50%;}
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.95);
+      max-width: 500px;
+      width: 100%;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+      text-align: center;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(20px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      font-size: 22px;
+      color: #333;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    button {
+      margin-top: 20px;
+      background: #6a11cb;
+      background: linear-gradient(90deg, #6a11cb, #2575fc);
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: 0.3s;
+      width: 100%;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    ul {
+      list-style: none;
+      text-align: left;
+    }
+
+    li {
+      margin: 12px 0;
+      background: #f4f4f9;
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    li:hover {
+      background: #e6e6ff;
+    }
+
+    .progress-bar {
+      background: #eee;
+      border-radius: 8px;
+      overflow: hidden;
+      height: 10px;
+      margin-bottom: 20px;
+    }
+
+    .progress {
+      background: #6a11cb;
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .timer {
+      font-size: 14px;
+      margin-bottom: 10px;
+      color: #555;
+    }
+
+    .result {
+      font-size: 18px;
+      margin-bottom: 15px;
+    }
+
+    .signature {
+      margin-top: 20px;
+      font-weight: bold;
+      font-size: 14px;
+      color: #222;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container" id="form-container">
+    <h2>Enter Your Details</h2>
+    <input type="text" id="name" placeholder="Enter your name" required>
+    <input type="number" id="age" placeholder="Enter your age" required>
+    <input type="text" id="class" placeholder="Enter your class" required>
+    <input type="text" id="roll" placeholder="Enter your roll no." required>
+    <input type="text" id="subject" placeholder="Subject you like" required>
+    <button onclick="startQuiz()">Start Quiz</button>
+  </div>
+
+  <div class="container" id="quiz-container" style="display:none;">
+    <div class="timer" id="timer">Time left: 15s</div>
+    <div class="progress-bar">
+      <div class="progress" id="progress"></div>
+    </div>
+    <h2 id="question">Question text</h2>
+    <ul>
+      <li>
+        <input type="radio" name="answer" id="a" class="answer">
+        <label for="a" id="a_text">Answer A</label>
+      </li>
+      <li>
+        <input type="radio" name="answer" id="b" class="answer">
+        <label for="b" id="b_text">Answer B</label>
+      </li>
+      <li>
+        <input type="radio" name="answer" id="c" class="answer">
+        <label for="c" id="c_text">Answer C</label>
+      </li>
+      <li>
+        <input type="radio" name="answer" id="d" class="answer">
+        <label for="d" id="d_text">Answer D</label>
+      </li>
+    </ul>
+    <button id="submit">Submit</button>
+  </div>
+
+  <script>
+    const quizData = [
+      {question: "What does HTML stand for?", a: "Hyper Text Markup Language", b: "Home Tool Markup Language", c: "Hyperlinks and Text Markup Language", d: "Hyper Tech Mark Language", correct: "a"},
+      {question: "Which language runs in a web browser?", a: "Java", b: "C", c: "Python", d: "JavaScript", correct: "d"},
+      {question: "What year was JavaScript launched?", a: "1996", b: "1995", c: "1994", d: "1997", correct: "b"},
+      {question: "Which symbol is used for comments in JS?", a: "//", b: "/* */", c: "#", d: "<!-- -->", correct: "a"},
+      {question: "Which HTML tag is used for JavaScript?", a: "<script>", b: "<javascript>", c: "<code>", d: "<js>", correct: "a"},
+      {question: "Which company developed JavaScript?", a: "Microsoft", b: "Sun Microsystems", c: "Netscape", d: "Google", correct: "c"},
+      {question: "Inside which HTML element do we put the CSS?", a: "<css>", b: "<style>", c: "<script>", d: "<design>", correct: "b"},
+      {question: "Which operator assigns values in JS?", a: "=", b: "==", c: "===", d: "=>", correct: "a"},
+      {question: "Which method prints in console?", a: "console.print()", b: "log.console()", c: "console.log()", d: "print.console()", correct: "c"},
+      {question: "Which of these is NOT a JS data type?", a: "String", b: "Number", c: "Boolean", d: "Character", correct: "d"},
+    ];
+
+    const formContainer = document.getElementById("form-container");
+    const quizContainer = document.getElementById("quiz-container");
+    const quiz = document.getElementById("quiz-container");
+    const answerEls = document.querySelectorAll(".answer");
+    const questionEl = document.getElementById("question");
+    const a_text = document.getElementById("a_text");
+    const b_text = document.getElementById("b_text");
+    const c_text = document.getElementById("c_text");
+    const d_text = document.getElementById("d_text");
+    const submitBtn = document.getElementById("submit");
+    const timerEl = document.getElementById("timer");
+    const progressEl = document.getElementById("progress");
+
+    let userDetails = {};
+    let currentQuiz = 0;
+    let score = 0;
+    let timeLeft = 15;
+    let timer;
+
+    function startQuiz() {
+      userDetails = {
+        name: document.getElementById("name").value,
+        age: document.getElementById("age").value,
+        class: document.getElementById("class").value,
+        roll: document.getElementById("roll").value,
+        subject: document.getElementById("subject").value
+      };
+
+      if (!userDetails.name || !userDetails.age || !userDetails.class || !userDetails.roll || !userDetails.subject) {
+        alert("Please fill all details!");
+        return;
+      }
+
+      formContainer.style.display = "none";
+      quizContainer.style.display = "block";
+      loadQuiz();
+    }
+
+    function loadQuiz() {
+      deselectAnswers();
+      const currentQuizData = quizData[currentQuiz];
+      questionEl.innerText = currentQuizData.question;
+      a_text.innerText = currentQuizData.a;
+      b_text.innerText = currentQuizData.b;
+      c_text.innerText = currentQuizData.c;
+      d_text.innerText = currentQuizData.d;
+
+      updateProgress();
+      resetTimer();
+    }
+
+    function deselectAnswers() {
+      answerEls.forEach((answerEl) => (answerEl.checked = false));
+    }
+
+    function getSelected() {
+      let answer;
+      answerEls.forEach((answerEl) => {
+        if (answerEl.checked) {
+          answer = answerEl.id;
+        }
+      });
+      return answer;
+    }
+
+    function updateProgress() {
+      const progressPercent = ((currentQuiz) / quizData.length) * 100;
+      progressEl.style.width = `${progressPercent}%`;
+    }
+
+    function resetTimer() {
+      clearInterval(timer);
+      timeLeft = 15;
+      timerEl.innerText = `Time left: ${timeLeft}s`;
+      timer = setInterval(() => {
+        timeLeft--;
+        timerEl.innerText = `Time left: ${timeLeft}s`;
+        if (timeLeft === 0) {
+          nextQuestion();
+        }
+      }, 1000);
+    }
+
+    function nextQuestion() {
+      const answer = getSelected();
+      if (answer && answer === quizData[currentQuiz].correct) {
+        score++;
+      }
+      currentQuiz++;
+      if (currentQuiz < quizData.length) {
+        loadQuiz();
+      } else {
+        showResult();
+      }
+    }
+
+    function showResult() {
+      clearInterval(timer);
+      progressEl.style.width = "100%";
+      quiz.innerHTML = `
+        <h2>🎉 Quiz Finished!</h2>
+        <p class="result"><strong>${userDetails.name.toUpperCase()}</strong>, you scored <strong>${score}/${quizData.length}</strong></p>
+        <p><b>Age:</b> ${userDetails.age}</p>
+        <p><b>Class:</b> ${userDetails.class}</p>
+        <p><b>Roll No:</b> ${userDetails.roll}</p>
+        <p><b>Favourite Subject:</b> ${userDetails.subject}</p>
+        <button onclick="location.reload()">Restart</button>
+        <div class="signature">✨ THIS QUIZ APP IS CREATED BY AMAN PRAJAPATI ✨</div>
+      `;
+    }
+    submitBtn.addEventListener("click", nextQuestion);
+  </script>
+</body>
+</html>
